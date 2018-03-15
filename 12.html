@@ -1,0 +1,84 @@
+ <html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<title>拖动DIV</title> 
+<style type="text/css"> 
+.wrapper{
+    width: 600px;
+    height :600px;
+    background-color: lightgreen;
+}
+.content{
+    width: 200px;
+    height: 200px;
+    background-color: #ccc;
+    position: absolute;
+
+}
+
+</style> 
+
+</head> 
+
+<script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+    $('.content').dragDiv(".wrapper");
+	$("#h").html($(".wrapper").height());
+	$("#w").html($(".wrapper").width());
+}) 
+
+;(function($) {
+    $.fn.dragDiv = function(options) {
+        return this.each(function() {
+            var _moveDiv = $(this);//需要拖动的Div
+            var _moveArea = options ? $(options) : $(document);//限定拖动区域，默认为整个文档内
+            var isDown = false;//mousedown标记
+            //ie的事件监听，拖拽div时禁止选中内容，firefox与chrome已在css中设置过-moz-user-select: none; -webkit-user-select: none;
+            if(document.attachEvent){
+                _moveDiv[0].attachEvent('onselectstart', function() {
+                    return false;
+                });
+            }
+            _moveDiv.mousedown(function(event) {            
+                var e = event || window.event;
+                //拖动时鼠标样式
+                _moveDiv.css("cursor", "move");
+                //获得鼠标指针离DIV元素左边界的距离
+                var x = e.pageX - _moveDiv.offset().left;
+                //获得鼠标指针离DIV元素上边界的距离 
+                var y = e.pageY - _moveDiv.offset().top;
+                _moveArea.on('mousemove', function(event) {
+                    var ev = event || window.event;
+                    //获得X轴方向移动的值 
+                    var abs_x = ev.pageX - x;
+                    //获得Y轴方向移动的值 
+                    var abs_y = ev.pageY - y;
+                    //div动态位置赋值
+                    _moveDiv.css({'left': abs_x, 'top': abs_y});
+					$("#x").html("abs_x："+abs_x+" ev.pageX："+ev.pageX+" x:"+x);
+					$("#y").html("abs_y:"+abs_y+" ev.pageY："+ev.pageX+" y:"+y);
+                })
+            });
+            _moveDiv.mouseup(function() {
+                _moveDiv.css('cursor', 'default');
+                //解绑拖动事件
+                _moveArea.off('mousemove');
+
+            });
+
+        })
+    }
+})(jQuery)
+</script>
+<body> 
+    <div class="wrapper">
+        <div class="content">
+            拖动Div
+        </div>
+    </div>
+    <p>鼠标指针的坐标是: x坐标：<span id="x"></span>  <br/>.y坐标：<span id="y"></span></p>
+	<p>容器的高宽: x宽：<span id="w"></span>.y高：<span id="h"></span></p>
+</body>
+</html>
